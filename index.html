@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prueba · de mi compu a internet</title>
+  <meta name="description" content="Landing de prueba: un index.html que viajó de la compu a GitHub y de ahí a Vercel.">
+  <!-- Fuentes: Archivo (la del canal) + JetBrains Mono para todo lo que sea un dato -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --fondo: #14110f;
+      --papel: #efe6d8;
+      --tenue: #8a7f72;
+      --linea: #3a332d;
+      --ambar: #f2a63b;
+      --mono: "JetBrains Mono", ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      background: var(--fondo);
+      color: var(--papel);
+      font: 400 17px/1.55 "Archivo", system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    main { width: min(980px, 92vw); margin: 0 auto; padding: 14vh 0 8vh; flex: 1; }
+
+    h1 { font-weight: 800; font-size: clamp(2.2rem, 6vw, 4.2rem); line-height: 1.02; letter-spacing: -0.02em; max-width: 14ch; }
+    h1 em { font-style: normal; color: var(--ambar); }
+    .bajada { color: var(--tenue); max-width: 46ch; margin-top: 1.2rem; font-size: 1.1rem; }
+
+    /* ── El momento: el recorrido del archivo, de la compu a este dominio ──
+       Cada parada es real: lo que hiciste para que esta página exista. */
+    .ruta {
+      list-style: none; padding: 0;
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      margin-top: 4.5rem; position: relative;
+    }
+    /* La línea que une las paradas (gris = camino) y su relleno ámbar (= lo recorrido) */
+    .ruta::before, .ruta::after {
+      content: ""; position: absolute; top: 7px; left: 0; height: 2px;
+    }
+    .ruta::before { right: 0; background: var(--linea); }
+    .ruta::after  { width: 100%; background: var(--ambar); transform-origin: left; }
+    .parada { position: relative; padding: 2rem 1rem 0 0; }
+    .parada::before {
+      content: ""; position: absolute; top: 0; left: 0;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: var(--ambar); border: 2px solid var(--fondo);
+    }
+    .parada b { display: block; font-weight: 600; font-size: 1.05rem; }
+    .parada code { font-family: var(--mono); font-size: .85rem; color: var(--ambar); }
+    .parada small { display: block; font-family: var(--mono); font-size: .75rem; color: var(--tenue); margin-top: .35rem; }
+
+    /* Estado escondido SÓLO si hay JS (el script agrega la clase .js).
+       Sin JS, la ruta se ve completa desde el principio. */
+    .js .ruta::after { transform: scaleX(0); }
+    .js .parada::before { background: var(--linea); transition: background .3s, box-shadow .3s; }
+    .js .parada > * { opacity: .35; transition: opacity .4s; }
+    .js .parada.llego::before { background: var(--ambar); box-shadow: 0 0 0 6px rgba(242,166,59,.18); }
+    .js .parada.llego > * { opacity: 1; }
+    .js .corriendo .ruta::after { transition: transform 2.4s cubic-bezier(.6,0,.3,1); transform: scaleX(1); }
+
+    .otra-vez {
+      margin-top: 2.5rem; background: none; border: 0; padding: 0; cursor: pointer;
+      font: 400 .85rem var(--mono); color: var(--tenue);
+    }
+    .otra-vez:hover, .otra-vez:focus-visible { color: var(--papel); }
+    .no-js-oculto { display: none; }
+    .js .no-js-oculto { display: inline-block; }
+
+    /* Cómo actualizarla: los tres comandos, en un bloque que se puede copiar */
+    section { margin-top: 7rem; max-width: 560px; }
+    h2 { font-weight: 800; font-size: 1.6rem; letter-spacing: -0.01em; }
+    section p { color: var(--tenue); margin-top: .5rem; }
+    pre {
+      margin-top: 1.2rem; padding: 1.1rem 1.25rem; border: 1px solid var(--linea); border-radius: 6px;
+      font: 400 .9rem/1.8 var(--mono); overflow-x: auto;
+    }
+    pre span { color: var(--tenue); }
+
+    footer { width: min(980px, 92vw); margin: 0 auto; padding: 2rem 0; border-top: 1px solid var(--linea);
+      font: .8rem var(--mono); color: var(--tenue); }
+
+    /* Mobile: la ruta pasa a vertical, la línea baja en vez de cruzar */
+    @media (max-width: 640px) {
+      .ruta { grid-template-columns: 1fr; gap: 1.6rem; }
+      .ruta::before, .ruta::after { top: 0; bottom: 0; left: 7px; width: 2px; height: auto; right: auto; }
+      .ruta::after { height: 100%; transform-origin: top; }
+      .js .ruta::after { transform: scaleY(0); }
+      .js .corriendo .ruta::after { transform: scaleY(1); }
+      .parada { padding: 0 0 0 2.2rem; }
+    }
+
+    /* Movimiento reducido: se muestra el estado final, sin animación */
+    @media (prefers-reduced-motion: reduce) {
+      .js .ruta::after { transform: none !important; transition: none !important; }
+      .js .parada::before { background: var(--ambar); }
+      .js .parada > * { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <main id="escena">
+    <h1>Si estás leyendo esto, <em>la prueba funcionó.</em></h1>
+    <p class="bajada">Este archivo salió de una carpeta en mi compu, pasó por GitHub y Vercel lo puso acá. Éste fue el viaje:</p>
+
+    <ol class="ruta">
+      <li class="parada"><b>Mi compu</b><code>index.html</code><small>escrito y guardado</small></li>
+      <li class="parada"><b>GitHub</b><code>git push</code><small>el código queda guardado</small></li>
+      <li class="parada"><b>Vercel</b><code>deploy</code><small>lo publica solo</small></li>
+      <li class="parada"><b>Online</b><code id="host">este dominio</code><small id="hora">y vos lo estás viendo</small></li>
+    </ol>
+
+    <button class="otra-vez no-js-oculto" type="button">↻ ver el viaje de nuevo</button>
+
+    <section>
+      <h2>Para cambiarla</h2>
+      <p>Editás el archivo y lo mandás de nuevo. Vercel se entera solo y la vuelve a publicar.</p>
+      <pre><span># desde la carpeta del proyecto</span>
+git add .
+git commit -m "cambio de prueba"
+git push</pre>
+    </section>
+  </main>
+
+  <footer>Página de prueba · HTML plano, sin build</footer>
+
+  <script>
+    // Marcamos que hay JS: recién ahí el CSS esconde el estado inicial.
+    // Así, si el script no corre, la página igual se ve completa.
+    document.documentElement.classList.add('js');
+
+    // Datos reales en la última parada: el dominio donde está publicada y la hora en que la abriste.
+    // (Abierta como archivo local no hay dominio, entonces dejamos el texto original.)
+    if (location.host) document.getElementById('host').textContent = location.host;
+    document.getElementById('hora').textContent =
+      'abierta a las ' + new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+    const escena = document.getElementById('escena');
+    const paradas = [...document.querySelectorAll('.parada')];
+    const quieto = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let timers = [];
+
+    // El viaje pasa una vez al entrar: la línea ámbar avanza y cada parada se enciende al llegar.
+    // Los tiempos coinciden con la transición de 2.4s del CSS (una parada cada ~0.8s).
+    function viajar() {
+      timers.forEach(clearTimeout); timers = [];
+      escena.classList.remove('corriendo');
+      paradas.forEach(p => p.classList.remove('llego'));
+      if (quieto) { paradas.forEach(p => p.classList.add('llego')); return; }
+      void escena.offsetWidth; // fuerza al navegador a "olvidar" el estado anterior para reiniciar la animación
+      escena.classList.add('corriendo');
+      paradas.forEach((p, i) => timers.push(setTimeout(() => p.classList.add('llego'), 150 + i * 750)));
+    }
+
+    // Arranca apenas cargan las fuentes, para que no salte el texto en medio del viaje.
+    document.fonts.ready.then(() => setTimeout(viajar, 400));
+    document.querySelector('.otra-vez').addEventListener('click', viajar);
+  </script>
+</body>
+</html>
